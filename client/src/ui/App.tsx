@@ -237,54 +237,47 @@ function App() {
     if(gameStarted && firstGame) setFirstGame(false);
     if(gameStarted) return;
     setTimeout(() => {
-      // if(!getCookies().hasOwnProperty('auth-token') || !getCookies()['auth-token']) {
-      //   console.log('No auth token found, skipping account check');
-      //   setAccountReady(true);
-      //   return;
-      // }
-      // console.log('Checking account');
-      // let secret: string | null = null;
-      // try {
-      //  secret = window.localStorage.getItem('secret');
-      // } catch(e) {
-      //   console.log('Error getting secret', e);
-      // }
-    // api.get(`${api.endpoint}/auth/account?now=${Date.now()}`, (data) => {
-    //   console.log('Account data', data);
-    //   setAccountReady(true);
-    //   if (data.account) {
-    //     data.account.token = data.token;
-    //     // if(data.account.secret) {
-    //     //   try {
-    //     //     window.localStorage.setItem('secret', data.account.secret);
-    //     //   } catch(e) {
-    //     //     console.log('Error setting secret', e);
-    //     //   }
-    //     // }
-    //     dispatch(setAccount(data.account));
-    //   } else {
-    //     if(typeof secret === 'string' && secret.length > 0) {
-    //       // attempt legacy login with secret
-    //       console.log('Attempting legacy login with secret');
-    //       api.post(`${api.endpoint}/auth/legacyLogin`, { secret }, (data) => {
-    //         if (data.account) {
-    //           data.account.token = data.token;
-    //           dispatch(setAccount(data.account));
-    //         } else {
-    //           console.log('Error logging in with secret', data);
-    //           dispatch(clearAccount());
-    //         }
-    //       });
-    //     }
-    //     dispatch(clearAccount());
-    //   }
-    // });
+      // Check for auto-login test mode
+      const urlParams = new URLSearchParams(window.location.search);
+      const autoLogin = urlParams.get('testLogin') === 'true';
+
       let secret: string | null = null;
       try {
        secret = window.localStorage.getItem('secret');
       } catch(e) {
         console.log('Error getting secret', e);
       }
+
+    if(!secret && autoLogin) {
+      // Auto-login for testing - create or login to test account
+      const testUsername = 'testuser_' + Math.floor(Math.random() * 10000);
+      const testPassword = 'testpass123';
+
+      console.log('Auto-login enabled - attempting to create test account:', testUsername);
+
+      // Try to create a test account
+      api.post(`${api.endpoint}/auth/signup`, {
+        username: testUsername,
+        password: testPassword
+      }, (data) => {
+        setAccountReady(true);
+        if (data.account) {
+          console.log('Test account created successfully');
+          data.account.secret = data.secret;
+          dispatch(setAccount(data.account));
+          try {
+            window.localStorage.setItem('secret', data.secret);
+          } catch(e) {
+            console.log('Error saving secret', e);
+          }
+        } else {
+          console.log('Failed to create test account, trying without auto-login');
+          dispatch(clearAccount());
+        }
+      });
+      return;
+    }
+
     if(!secret) {
       dispatch(clearAccount());
       setAccountReady(true);
