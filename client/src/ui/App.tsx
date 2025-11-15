@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faSignOut, faICursor,faGear, faX } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faSignOut, faICursor,faGear, faX, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import clsx from 'clsx';
 import { useScale } from './Scale';
@@ -15,6 +15,7 @@ import ChangelogModal from './modals/ChangelogModal';
 import LoginModal from './modals/LoginModal';
 import SignupModal from './modals/SignupModal';
 import ConnectionError from './modals/ConnectionError';
+import ClanModal from './modals/ClanModal';
 
 import { clearAccount, setAccount, logoutAsync, changeNameAsync, changeClanAsync, changeBioAsync } from '../redux/account/slice';
 import { selectAccount } from '../redux/account/selector';
@@ -146,6 +147,7 @@ function App() {
   const [game, setGame] = useState<Phaser.Game | undefined>(window.phaser_game);
   const [clanMemberCount, setClanMemberCount] = useState(0);
   const [clanXP, setClanXP] = useState(0);
+  const [pendingInvitations, setPendingInvitations] = useState(0);
 
   const [dimensions, setDimensions] = useState({ width: window.innerWidth, height: window.innerHeight });
 
@@ -341,6 +343,19 @@ function App() {
     setIsConnected(true);
   };
 
+  // Fetch pending clan invitations
+  useEffect(() => {
+    if (account.isLoggedIn && !gameStarted) {
+      api.get('/clans/invitations')
+        .then((response) => {
+          setPendingInvitations(response.data.invitations?.length || 0);
+        })
+        .catch(() => {
+          setPendingInvitations(0);
+        });
+    }
+  }, [account.isLoggedIn, gameStarted]);
+
   useEffect(() => {
     console.log('Checking if everything is ready. Connected:', isConnected, 'Assets:', assetsLoaded);
     if(debugMode) {
@@ -424,6 +439,9 @@ function App() {
     if (!newClan) return;
 
     dispatch(changeClanAsync('7Z9XQ') as any);
+  }
+  const openClanModal = () => {
+    setModal(<ClanModal account={account} />);
   }
   const openShop = () => {
     setModal(<ShopModal account={account} />);
@@ -638,13 +656,11 @@ function App() {
                    </a>
                    </li>
                     <li>
-                   <a className="dropdown-item" href="#" onClick={onChangeClan}>
-                     <FontAwesomeIcon icon={faICursor} /> Change Clan
-                   </a>
-                   </li>
-                   <li>
-                   <a className="dropdown-item" href="#" onClick={onRemoveClan}>
-                     <FontAwesomeIcon icon={faX} /> Remove Clan
+                   <a className="dropdown-item" href="#" onClick={openClanModal}>
+                     <FontAwesomeIcon icon={faUsers} /> Manage Clan
+                     {pendingInvitations > 0 && (
+                       <span className="notification-badge">{pendingInvitations}</span>
+                     )}
                    </a>
                    </li>
                    <li><a className="dropdown-item" href="#" onClick={onLogout}>

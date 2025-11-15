@@ -8,6 +8,7 @@ import { config } from './config';
 import { GamesModule } from './games/games.module';
 import { StatsModule } from './stats/stats.module';
 import { AuthService } from './auth/auth.service';
+import { ClansModule } from './clans/clans.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { AuthService } from './auth/auth.service';
     AccountsModule,
     GamesModule,
     StatsModule,
+    ClansModule,
   ],
   providers: [
     AuthService,

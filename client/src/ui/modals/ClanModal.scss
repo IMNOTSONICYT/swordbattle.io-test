@@ -1,0 +1,320 @@
+.clan-modal {
+  padding: 20px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+
+  h2 {
+    margin-bottom: 15px;
+    color: #fff;
+  }
+
+  h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #fff;
+    font-size: 1.2em;
+  }
+
+  .clan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+
+    .clan-tag {
+      color: #ffd700;
+      font-weight: bold;
+    }
+
+    .role-icon {
+      font-size: 1.5em;
+
+      &.owner {
+        color: #ffd700;
+      }
+
+      &.admin {
+        color: #4169e1;
+      }
+
+      &.member {
+        color: #888;
+      }
+    }
+  }
+
+  .clan-description {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    color: #ddd;
+    font-style: italic;
+  }
+
+  .clan-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+
+    .stat {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 5px;
+      color: #fff;
+
+      strong {
+        color: #ffd700;
+      }
+    }
+  }
+
+  .no-clan-message {
+    text-align: center;
+    padding: 20px;
+    color: #ddd;
+    font-size: 1.1em;
+  }
+
+  .no-invitations {
+    text-align: center;
+    padding: 20px;
+    color: #ddd;
+  }
+
+  .create-clan-form {
+    .form-group {
+      margin-bottom: 15px;
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #fff;
+        font-weight: bold;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        border: 2px solid #555;
+        border-radius: 5px;
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        font-size: 1em;
+
+        &:focus {
+          outline: none;
+          border-color: #ffd700;
+        }
+      }
+
+      textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+    }
+  }
+
+  .invite-section {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+
+    .invite-form {
+      display: flex;
+      gap: 10px;
+
+      input {
+        flex: 1;
+        padding: 8px;
+        border: 2px solid #555;
+        border-radius: 5px;
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+
+        &:focus {
+          outline: none;
+          border-color: #ffd700;
+        }
+      }
+    }
+  }
+
+  .members-section {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+
+    .members-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+
+      .member-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 10px;
+        border-radius: 5px;
+
+        .member-info {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex: 1;
+
+          .member-name {
+            color: #fff;
+            font-weight: bold;
+          }
+
+          .member-xp {
+            color: #aaa;
+            font-size: 0.9em;
+          }
+        }
+
+        .member-actions {
+          display: flex;
+          gap: 5px;
+        }
+      }
+    }
+  }
+
+  .invitations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .invitation-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+
+      .invitation-info {
+        flex: 1;
+
+        .invitation-clan {
+          font-size: 1.1em;
+          margin-bottom: 5px;
+          color: #fff;
+
+          .clan-tag {
+            color: #ffd700;
+            font-weight: bold;
+          }
+        }
+
+        .invitation-details {
+          color: #ddd;
+          font-size: 0.9em;
+          margin-bottom: 3px;
+        }
+
+        .invitation-date {
+          color: #888;
+          font-size: 0.85em;
+        }
+      }
+
+      .invitation-actions {
+        display: flex;
+        gap: 10px;
+      }
+    }
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.btn-primary {
+      background: #4169e1;
+      color: #fff;
+
+      &:hover {
+        background: #5179f1;
+      }
+    }
+
+    &.btn-secondary {
+      background: #666;
+      color: #fff;
+
+      &:hover {
+        background: #777;
+      }
+    }
+
+    &.btn-danger {
+      background: #dc3545;
+      color: #fff;
+
+      &:hover {
+        background: #e04555;
+      }
+    }
+
+    &.btn-small {
+      padding: 5px 10px;
+      font-size: 0.9em;
+    }
+
+    &.btn-promote {
+      background: #28a745;
+
+      &:hover {
+        background: #38b755;
+      }
+    }
+
+    &.btn-demote {
+      background: #ffc107;
+      color: #000;
+
+      &:hover {
+        background: #ffd117;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .error-message {
+    background: rgba(220, 53, 69, 0.2);
+    border: 1px solid #dc3545;
+    color: #ff6b7a;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+}
