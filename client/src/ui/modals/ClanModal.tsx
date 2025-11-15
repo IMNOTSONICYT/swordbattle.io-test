@@ -56,22 +56,18 @@ export default function ClanModal({ account, onClose }: ClanModalProps) {
     loadClanInfo();
   }, []);
 
-  const loadClanInfo = async () => {
+  const loadClanInfo = () => {
     setLoading(true);
     setError('');
-    try {
-      const response = await api.get('/clans/my/clan');
-      if (response.data && response.data.id) {
-        setClanInfo(response.data);
+
+    api.get('/clans/my/clan', (data: any) => {
+      setLoading(false);
+      if (data && data.id) {
+        setClanInfo(data);
       } else {
         setClanInfo(null);
       }
-    } catch (err: any) {
-      console.error('Error loading clan info:', err);
-      setClanInfo(null);
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const handleCreateClan = async (e: React.FormEvent) => {
@@ -79,19 +75,21 @@ export default function ClanModal({ account, onClose }: ClanModalProps) {
     setError('');
 
     try {
-      const response = await api.post('/clans/create', {
+      const response = await api.postAsync('/clans/create', {
         tag: clanTag,
         name: clanName,
         description: clanDescription
       });
 
-      if (response.data.success) {
+      if (response.success) {
         alert('Clan created successfully!');
         setView('main');
-        await loadClanInfo();
+        loadClanInfo();
+      } else if (response.message) {
+        setError(response.message);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create clan');
+      setError(err.message || 'Failed to create clan');
     }
   };
 
@@ -100,16 +98,18 @@ export default function ClanModal({ account, onClose }: ClanModalProps) {
 
     setError('');
     try {
-      const response = await api.post(`/clans/${clanInfo.id}/invite`, {
+      const response = await api.postAsync(`/clans/${clanInfo.id}/invite`, {
         username: inviteUsername
       });
 
-      if (response.data.success) {
+      if (response.success) {
         alert(`Invitation sent to ${inviteUsername}!`);
         setInviteUsername('');
+      } else if (response.message) {
+        setError(response.message);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to send invitation');
+      setError(err.message || 'Failed to send invitation');
     }
   };
 
@@ -117,14 +117,16 @@ export default function ClanModal({ account, onClose }: ClanModalProps) {
     if (!window.confirm('Are you sure you want to leave the clan?')) return;
 
     try {
-      const response = await api.post('/clans/leave');
-      if (response.data.success) {
+      const response = await api.postAsync('/clans/leave', {});
+      if (response.success) {
         alert('You have left the clan.');
-        await loadClanInfo();
+        loadClanInfo();
         window.location.reload();
+      } else if (response.message) {
+        setError(response.message);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to leave clan');
+      setError(err.message || 'Failed to leave clan');
     }
   };
 
@@ -133,13 +135,17 @@ export default function ClanModal({ account, onClose }: ClanModalProps) {
     if (!clanInfo) return;
 
     try {
-      const response = await api.delete(`/clans/${clanInfo.id}/members/${memberId}`);
-      if (response.data.success) {
-        alert(`${username} has been kicked from the clan.`);
-        await loadClanInfo();
-      }
+      // Use method for DELETE request
+      api.method(`/clans/${clanInfo.id}/members/${memberId}`, { method: 'DELETE' }, (data: any) => {
+        if (data.success) {
+          alert(`${username} has been kicked from the clan.`);
+          loadClanInfo();
+        } else if (data.message) {
+          setError(data.message);
+        }
+      });
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to kick member');
+      setError(err.message || 'Failed to kick member');
     }
   };
 
@@ -148,15 +154,17 @@ export default function ClanModal({ account, onClose }: ClanModalProps) {
     if (!clanInfo) return;
 
     try {
-      const response = await api.post(`/clans/${clanInfo.id}/members/${memberId}/promote`, {
+      const response = await api.postAsync(`/clans/${clanInfo.id}/members/${memberId}/promote`, {
         role: newRole
       });
-      if (response.data.success) {
+      if (response.success) {
         alert(`${username} has been ${newRole === 'admin' ? 'promoted' : 'demoted'}.`);
-        await loadClanInfo();
+        loadClanInfo();
+      } else if (response.message) {
+        setError(response.message);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to change member role');
+      setError(err.message || 'Failed to change member role');
     }
   };
 
@@ -361,38 +369,42 @@ function InvitationsView({ onBack }: InvitationsViewProps) {
     loadInvitations();
   }, []);
 
-  const loadInvitations = async () => {
+  const loadInvitations = () => {
     setLoading(true);
-    try {
-      const response = await api.get('/clans/invitations');
-      setInvitations(response.data.invitations || []);
-    } catch (err: any) {
-      setError('Failed to load invitations');
-    } finally {
+    api.get('/clans/invitations', (data: any) => {
       setLoading(false);
-    }
+      if (data && data.invitations) {
+        setInvitations(data.invitations);
+      } else {
+        setInvitations([]);
+      }
+    });
   };
 
   const handleAccept = async (invitationId: number) => {
     try {
-      const response = await api.post(`/clans/invitations/${invitationId}/accept`);
-      if (response.data.success) {
+      const response = await api.postAsync(`/clans/invitations/${invitationId}/accept`, {});
+      if (response.success) {
         alert('You have joined the clan!');
         window.location.reload();
+      } else if (response.message) {
+        alert(response.message);
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to accept invitation');
+      alert(err.message || 'Failed to accept invitation');
     }
   };
 
   const handleDecline = async (invitationId: number) => {
     try {
-      const response = await api.post(`/clans/invitations/${invitationId}/decline`);
-      if (response.data.success) {
-        await loadInvitations();
+      const response = await api.postAsync(`/clans/invitations/${invitationId}/decline`, {});
+      if (response.success) {
+        loadInvitations();
+      } else if (response.message) {
+        alert(response.message);
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to decline invitation');
+      alert(err.message || 'Failed to decline invitation');
     }
   };
 

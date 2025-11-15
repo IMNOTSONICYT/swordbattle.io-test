@@ -346,13 +346,13 @@ function App() {
   // Fetch pending clan invitations
   useEffect(() => {
     if (account.isLoggedIn && !gameStarted) {
-      api.get('/clans/invitations')
-        .then((response) => {
-          setPendingInvitations(response.data.invitations?.length || 0);
-        })
-        .catch(() => {
+      api.get('/clans/invitations', (data: any) => {
+        if (data && data.invitations) {
+          setPendingInvitations(data.invitations.length);
+        } else {
           setPendingInvitations(0);
-        });
+        }
+      });
     }
   }, [account.isLoggedIn, gameStarted]);
 
