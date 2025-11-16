@@ -1,4 +1,6 @@
 const config = require('./config');
+const fs = require('fs');
+const path = require('path');
 
 const secret = config.moderationSecret;
 let bannedIps = ['72.46.85.221', '207.188.6.167', '67.213.120.15'];
@@ -60,6 +62,23 @@ async function giveCoins(game, params) {
 
 module.exports = {
   initModeration: function (game, app) {
+    // Serve the moderation HTML panel
+    app.get('/moderation', (res, req) => {
+      try {
+        const htmlPath = path.join(__dirname, 'moderation.html');
+        const html = fs.readFileSync(htmlPath, 'utf8');
+
+        res.writeHeader('Content-Type', 'text/html');
+        res.writeStatus('200 OK');
+        res.end(html);
+      } catch (err) {
+        console.error('Error serving moderation panel:', err);
+        res.writeStatus('500 Internal Server Error');
+        res.end('Failed to load moderation panel');
+      }
+    });
+
+    // API endpoints for moderation commands
     app.get('/moderation/:secret/:command', (res, req) => {
       try {
         const fullUrl = req.getUrl();
@@ -77,13 +96,14 @@ module.exports = {
           const params = query.split('&');
           for (const param of params) {
             const [key, value] = param.split('=');
-            req.params[key] = value;
+            req.params[key] = decodeURIComponent(value);
           }
         }
 
         if (req.params.secret !== secret) {
           res.writeStatus('403 Forbidden');
-          res.end();
+          res.writeHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: 'Invalid secret' }));
           return;
         }
 
@@ -92,7 +112,8 @@ module.exports = {
 
         if (!cmds.find(c => c[0] === command)) {
           res.writeStatus('400 Bad Request');
-          res.end();
+          res.writeHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: 'Invalid command' }));
           return;
         }
 
@@ -102,12 +123,14 @@ module.exports = {
           res.end(JSON.stringify(json));
         }).catch((e) => {
           res.writeStatus('500 Internal Server Error');
-          res.end('Internal Server Error+<br><br>' + e?.message);
+          res.writeHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: e?.message || 'Internal Server Error' }));
         });
       } catch (err) {
         console.error(err);
         res.writeStatus('500 Internal Server Error');
-        res.end('Internal Server Error+<br><br>' + err?.message);
+        res.writeHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: err?.message || 'Internal Server Error' }));
       }
     });
   },

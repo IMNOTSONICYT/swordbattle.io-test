@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swordbattle.io - Moderation Panel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      max-width: 400px;
+      margin: 100px auto;
+    }
+
+    .login-box h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1em;
+      margin-bottom: 15px;
+    }
+
+    .login-box input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .login-box button:hover {
+      transform: translateY(-2px);
+    }
+
+    .dashboard {
+      display: none;
+    }
+
+    .dashboard.active {
+      display: block;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #667eea;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      font-size: 2em;
+      margin-bottom: 5px;
+    }
+
+    .stat-card p {
+      opacity: 0.9;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    table th {
+      background: #f8f9fa;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #333;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    table td {
+      padding: 12px;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+      font-weight: 500;
+      transition: all 0.2s;
+      margin-right: 5px;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .btn-warning {
+      background: #ffc107;
+      color: #333;
+    }
+
+    .btn-warning:hover {
+      background: #e0a800;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-inline {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .alert {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .logout-btn {
+      background: white;
+      color: #667eea;
+      padding: 10px 20px;
+      border: 2px solid white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      float: right;
+      margin-bottom: 20px;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255,255,255,0.9);
+    }
+
+    .refresh-btn {
+      background: #17a2b8;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .refresh-btn:hover {
+      background: #138496;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      font-weight: 500;
+    }
+
+    .badge-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h3 {
+      color: #333;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #999;
+    }
+
+    .close-btn:hover {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Box -->
+  <div id="loginBox" class="login-box">
+    <h2>🛡️ Moderation Panel</h2>
+    <p style="color: #666; margin-bottom: 20px;">Enter your secret key to access the moderation tools</p>
+    <input type="password" id="secretInput" placeholder="Enter secret key..." onkeypress="if(event.key === 'Enter') login()">
+    <button onclick="login()">Access Panel</button>
+    <div id="loginError" style="color: #dc3545; margin-top: 10px; display: none;"></div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="dashboard">
+    <div class="container">
+      <div class="header">
+        <button class="logout-btn" onclick="logout()">Logout</button>
+        <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+        <h1>⚔️ Swordbattle.io Moderation Panel</h1>
+        <p>Manage players, ban users, and moderate the game</p>
+      </div>
+
+      <div id="alertBox"></div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3 id="totalPlayers">0</h3>
+          <p>Online Players</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="bannedIpsCount">0</h3>
+          <p>Banned IPs</p>
+        </div>
+      </div>
+
+      <!-- Online Players -->
+      <div class="card">
+        <h2>👥 Online Players</h2>
+        <div id="playersTable"></div>
+      </div>
+
+      <!-- Give Coins -->
+      <div class="card">
+        <h2>💰 Give Coins</h2>
+        <form class="form-inline" onsubmit="giveCoins(event)">
+          <div class="form-group">
+            <label>Player ID</label>
+            <input type="number" id="coinPlayerId" required>
+          </div>
+          <div class="form-group">
+            <label>Coins Amount</label>
+            <input type="number" id="coinsAmount" required>
+          </div>
+          <div class="form-group">
+            <label>&nbsp;</label>
+            <button type="submit" class="btn btn-success">Give Coins</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Banned IPs -->
+      <div class="card">
+        <h2>🚫 Banned IPs</h2>
+        <div class="form-inline" style="margin-bottom: 20px;">
+          <div class="form-group">
+            <label>IP Address</label>
+            <input type="text" id="banIpInput" placeholder="e.g., 192.168.1.1">
+          </div>
+          <div class="form-group">
+            <label>&nbsp;</label>
+            <button class="btn btn-danger" onclick="banIpManual()">Ban IP</button>
+          </div>
+        </div>
+        <div id="bannedIpsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let secretKey = '';
+    let players = [];
+    let bannedIps = [];
+
+    function login() {
+      const secret = document.getElementById('secretInput').value;
+      if (!secret) {
+        showLoginError('Please enter a secret key');
+        return;
+      }
+
+      secretKey = secret;
+
+      // Test the secret by trying to fetch data
+      fetchPlayers().then(() => {
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('dashboard').classList.add('active');
+        refreshData();
+      }).catch(() => {
+        showLoginError('Invalid secret key');
+        secretKey = '';
+      });
+    }
+
+    function logout() {
+      secretKey = '';
+      document.getElementById('loginBox').style.display = 'block';
+      document.getElementById('dashboard').classList.remove('active');
+      document.getElementById('secretInput').value = '';
+    }
+
+    function showLoginError(message) {
+      const errorDiv = document.getElementById('loginError');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 3000);
+    }
+
+    function showAlert(message, type = 'success') {
+      const alertBox = document.getElementById('alertBox');
+      alertBox.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+      setTimeout(() => {
+        alertBox.innerHTML = '';
+      }, 5000);
+    }
+
+    async function fetchPlayers() {
+      const response = await fetch(`/moderation/${secretKey}/list`);
+      if (!response.ok) throw new Error('Failed to fetch');
+      const data = await response.json();
+      players = data.players || [];
+      updatePlayersTable();
+      document.getElementById('totalPlayers').textContent = players.length;
+      return data;
+    }
+
+    async function fetchBannedIps() {
+      // We'll get this from the banip response
+      // For now, just update the count from the global var
+      document.getElementById('bannedIpsCount').textContent = bannedIps.length;
+      updateBannedIpsList();
+    }
+
+    function updatePlayersTable() {
+      const container = document.getElementById('playersTable');
+
+      if (players.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No players online</p></div>';
+        return;
+      }
+
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>IP Address</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      players.forEach(player => {
+        html += `
+          <tr>
+            <td>${player.id}</td>
+            <td><strong>${escapeHtml(player.name)}</strong></td>
+            <td><code>${player.ip}</code></td>
+            <td>
+              <button class="btn btn-danger" onclick="banIp('${player.ip}')">Ban IP</button>
+              <button class="btn btn-primary" onclick="openGiveCoinsModal(${player.id}, '${escapeHtml(player.name)}')">Give Coins</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function updateBannedIpsList() {
+      const container = document.getElementById('bannedIpsList');
+
+      if (bannedIps.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No banned IPs</p></div>';
+        return;
+      }
+
+      let html = '<div>';
+      bannedIps.forEach(ip => {
+        html += `
+          <div style="display: inline-block; margin: 5px;">
+            <span class="badge badge-danger">${ip}</span>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    async function banIp(ip) {
+      if (!confirm(`Are you sure you want to ban IP: ${ip}?`)) return;
+
+      try {
+        const response = await fetch(`/moderation/${secretKey}/banip?ip=${encodeURIComponent(ip)}`);
+        const data = await response.json();
+
+        bannedIps = data.bannedIps || [];
+        showAlert(`IP banned successfully! ${data.playersKicked} player(s) kicked.`, 'success');
+        refreshData();
+      } catch (error) {
+        showAlert('Failed to ban IP', 'error');
+      }
+    }
+
+    async function banIpManual() {
+      const ip = document.getElementById('banIpInput').value.trim();
+      if (!ip) {
+        showAlert('Please enter an IP address', 'error');
+        return;
+      }
+
+      await banIp(ip);
+      document.getElementById('banIpInput').value = '';
+    }
+
+    function openGiveCoinsModal(playerId, playerName) {
+      document.getElementById('coinPlayerId').value = playerId;
+      document.getElementById('coinsAmount').focus();
+    }
+
+    async function giveCoins(event) {
+      event.preventDefault();
+
+      const playerId = document.getElementById('coinPlayerId').value;
+      const coins = document.getElementById('coinsAmount').value;
+
+      try {
+        const response = await fetch(`/moderation/${secretKey}/givecoins?id=${playerId}&coins=${coins}`);
+        const data = await response.json();
+
+        showAlert(`Successfully gave ${coins} coins! Player now has ${data.coins} coins.`, 'success');
+        document.getElementById('coinPlayerId').value = '';
+        document.getElementById('coinsAmount').value = '';
+      } catch (error) {
+        showAlert('Failed to give coins', 'error');
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function refreshData() {
+      fetchPlayers();
+      fetchBannedIps();
+    }
+
+    // Auto-refresh every 5 seconds
+    setInterval(() => {
+      if (secretKey) {
+        fetchPlayers();
+      }
+    }, 5000);
+  </script>
+</body>
+</html>
