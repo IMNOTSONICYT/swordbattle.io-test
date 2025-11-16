@@ -105,12 +105,16 @@ module.exports = class Mage extends Evolution {
         break;
       case ELEMENTS.EARTH:
         // Increased knockback & resistance
-        this.player.sword.knockback.multiplier['element'] = 1.3;
+        if (this.player.sword && this.player.sword.knockback) {
+          this.player.sword.knockback.multiplier['element'] = 1.3;
+        }
         this.player.modifiers.knockbackResistance = 0.7;
         break;
       case ELEMENTS.AIR:
         // Swordthrows fling players away
-        this.player.sword.knockback.multiplier['throw'] = 2;
+        if (this.player.sword && this.player.sword.knockback) {
+          this.player.sword.knockback.multiplier['throw'] = 2;
+        }
         break;
       case ELEMENTS.DARKNESS:
         // Lifesteal

@@ -29,9 +29,11 @@ module.exports = class Werewolf extends Evolution {
     this.player.health.regeneration.multiplier *= 1.4;
 
     // Passive: Lower HP = more damage (up to 50% more based on how low health is)
-    const healthPercent = this.player.health.value / this.player.health.max.value;
-    const damageBonus = 1 + (0.5 * (1 - healthPercent)); // 1.0 to 1.5 based on health
-    this.player.sword.damage.multiplier *= damageBonus;
+    if (this.player.sword && this.player.sword.damage) {
+      const healthPercent = this.player.health.value / this.player.health.max.value;
+      const damageBonus = 1 + (0.5 * (1 - healthPercent)); // 1.0 to 1.5 based on health
+      this.player.sword.damage.multiplier *= damageBonus;
+    }
 
     this.player.modifiers.candyMultiplier = 2; // Inherit from Candygrabber
 

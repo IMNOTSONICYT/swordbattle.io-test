@@ -22,7 +22,9 @@ module.exports = class Astral extends Evolution {
     const multiplier = 1 + this.stellarProgress; // 1x to 2x
 
     this.player.speed.multiplier *= multiplier;
-    this.player.sword.scale *= multiplier;
+    if (this.player.sword) {
+      this.player.sword.scale *= multiplier;
+    }
     this.player.health.regeneration.multiplier *= multiplier;
     this.player.shape.setScale(1 + (0.5 * this.stellarProgress)); // Base scale plus growth
   }
@@ -34,14 +36,17 @@ module.exports = class Astral extends Evolution {
 
   update(dt) {
     // Base stats: Very slow attack speed, high damage, higher health, very low regen
-    this.player.sword.swingDuration.multiplier['astral'] = 1.6; // Slower attack
-    this.player.sword.damage.multiplier *= 1.35;
+    if (this.player.sword) {
+      this.player.sword.swingDuration.multiplier['astral'] = 1.6; // Slower attack
+      this.player.sword.damage.multiplier *= 1.35;
+
+      // Passive: Sword is 50-75% bigger
+      const swordSizeIncrease = 0.5 + (Math.random() * 0.25); // 50-75%
+      this.player.sword.scale *= (1 + swordSizeIncrease);
+    }
+
     this.player.health.max.multiplier *= 1.3;
     this.player.health.regeneration.multiplier *= 0.4;
-
-    // Passive: Sword is 50-75% bigger
-    const swordSizeIncrease = 0.5 + (Math.random() * 0.25); // 50-75%
-    this.player.sword.scale *= (1 + swordSizeIncrease);
 
     this.player.modifiers.candyMultiplier = 2; // Inherit from Candygrabber chain
 

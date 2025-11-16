@@ -11,7 +11,9 @@ module.exports = class Spirit extends Evolution {
   applyAbilityEffects() {
     // Ability: No Knockback - heavily increases knockback dealt, increases speed, lowers health
     this.player.modifiers.noKnockback = true;
-    this.player.sword.knockback.multiplier['ability'] = 3.5;
+    if (this.player.sword && this.player.sword.knockback) {
+      this.player.sword.knockback.multiplier['ability'] = 3.5;
+    }
     this.player.speed.multiplier *= 1.4;
     this.player.health.max.multiplier *= 0.85;
   }
@@ -22,7 +24,9 @@ module.exports = class Spirit extends Evolution {
     this.player.speed.multiplier *= 1.3;
     this.player.shape.setScale(0.85);
     this.player.modifiers.knockbackResistance = 0.2;
-    this.player.sword.knockback.multiplier['passive'] = 0.5;
+    if (this.player.sword && this.player.sword.knockback) {
+      this.player.sword.knockback.multiplier['passive'] = 0.5;
+    }
 
     // Passive: Phases through objects
     this.player.modifiers.phaseThrough = true;
