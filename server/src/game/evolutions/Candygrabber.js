@@ -15,6 +15,7 @@ module.exports = class Candygrabber extends Evolution {
   applyAbilityEffects() {
     // Trick or Treat ability - randomly gets a Trick or Treat
     if (!this.player.sword || !this.player.sword.damage) return;
+    if (!this.player.speed || !this.player.health || !this.player.health.max) return;
 
     if (!this.lastTrickOrTreat || this.abilityDurationTimer.time < 0.1) {
       // Roll for Trick or Treat when ability is activated

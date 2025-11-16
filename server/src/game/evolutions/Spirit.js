@@ -14,14 +14,22 @@ module.exports = class Spirit extends Evolution {
     if (this.player.sword && this.player.sword.knockback) {
       this.player.sword.knockback.multiplier['ability'] = 3.5;
     }
-    this.player.speed.multiplier *= 1.4;
-    this.player.health.max.multiplier *= 0.85;
+    if (this.player.speed) {
+      this.player.speed.multiplier *= 1.4;
+    }
+    if (this.player.health && this.player.health.max) {
+      this.player.health.max.multiplier *= 0.85;
+    }
   }
 
   update(dt) {
     // Base stats: Low health, fast speed, lower size, very low knockback resistance
-    this.player.health.max.multiplier *= 0.8;
-    this.player.speed.multiplier *= 1.3;
+    if (this.player.health && this.player.health.max) {
+      this.player.health.max.multiplier *= 0.8;
+    }
+    if (this.player.speed) {
+      this.player.speed.multiplier *= 1.3;
+    }
     this.player.shape.setScale(0.85);
     this.player.modifiers.knockbackResistance = 0.2;
     if (this.player.sword && this.player.sword.knockback) {

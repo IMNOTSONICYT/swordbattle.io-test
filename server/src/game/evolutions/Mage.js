@@ -88,8 +88,12 @@ module.exports = class Mage extends Evolution {
 
   update(dt) {
     // Base stats: Higher health, higher speed
-    this.player.health.max.multiplier *= 1.15;
-    this.player.speed.multiplier *= 1.2;
+    if (this.player.health && this.player.health.max) {
+      this.player.health.max.multiplier *= 1.15;
+    }
+    if (this.player.speed) {
+      this.player.speed.multiplier *= 1.2;
+    }
 
     // Passive: Master of all elements - different abilities per element
     switch (this.currentElement) {
@@ -123,11 +127,15 @@ module.exports = class Mage extends Evolution {
         break;
       case ELEMENTS.NATURE:
         // Regens much faster
-        this.player.health.regeneration.multiplier *= 1.8;
+        if (this.player.health && this.player.health.regeneration) {
+          this.player.health.regeneration.multiplier *= 1.8;
+        }
         break;
       case ELEMENTS.LIGHTNING:
         // Increased speed
-        this.player.speed.multiplier *= 1.25;
+        if (this.player.speed) {
+          this.player.speed.multiplier *= 1.25;
+        }
         break;
     }
 

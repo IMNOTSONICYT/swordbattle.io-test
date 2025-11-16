@@ -23,9 +23,15 @@ module.exports = class Necromancer extends Evolution {
   update(dt) {
     // Base stats: Slightly more size, low regen, higher health, lower speed
     this.player.shape.setScale(1.1);
-    this.player.health.regeneration.multiplier *= 0.6;
-    this.player.health.max.multiplier *= 1.25;
-    this.player.speed.multiplier *= 0.9;
+    if (this.player.health && this.player.health.regeneration) {
+      this.player.health.regeneration.multiplier *= 0.6;
+    }
+    if (this.player.health && this.player.health.max) {
+      this.player.health.max.multiplier *= 1.25;
+    }
+    if (this.player.speed) {
+      this.player.speed.multiplier *= 0.9;
+    }
 
     // Passive: Kills summon minions
     this.player.modifiers.summonMinionOnKill = true;

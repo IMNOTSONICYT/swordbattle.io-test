@@ -37,8 +37,12 @@ module.exports = class Alchemist extends Evolution {
 
   update(dt) {
     // Base stats: Lower health, lower speed, higher size
-    this.player.health.max.multiplier *= 0.9;
-    this.player.speed.multiplier *= 0.85;
+    if (this.player.health && this.player.health.max) {
+      this.player.health.max.multiplier *= 0.9;
+    }
+    if (this.player.speed) {
+      this.player.speed.multiplier *= 0.85;
+    }
     this.player.shape.setScale(1.15);
 
     // Passive: Throws random potions
