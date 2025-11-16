@@ -17,7 +17,9 @@ module.exports = class Werewolf extends Evolution {
     // Ability: Last Stand - normally fatal damage sets HP to 1%
     // Increases damage and speed, decreases max health
     this.player.modifiers.lastStand = true;
-    this.player.sword.damage.multiplier *= 1.2;
+    if (this.player.sword && this.player.sword.damage) {
+      this.player.sword.damage.multiplier *= 1.2;
+    }
     this.player.speed.multiplier *= 1.15;
     this.player.health.max.multiplier *= 0.9;
   }
