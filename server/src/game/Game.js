@@ -76,6 +76,12 @@ class Game {
 
       response.clear();
       if (targetEntity.shape.collides(entity.shape, response)) {
+        // Check if entity has phaseThrough modifier and skip collision with map objects
+        const phaseableObstacles = [Types.Entity.IceSpike, Types.Entity.Rock, Types.Entity.MossyRock,
+                                     Types.Entity.LavaRock, Types.Entity.House1, Types.Entity.Bush];
+        if (entity.modifiers && entity.modifiers.phaseThrough && phaseableObstacles.includes(targetEntity.type)) {
+          continue;
+        }
         entity.processTargetsCollision(targetEntity, response, dt);
       }
     }

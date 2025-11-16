@@ -15,7 +15,7 @@ module.exports = class Mage extends Evolution {
   static type = Types.Evolution.Mage;
   static level = 15;
   static previousEvol = Types.Evolution.Spirit;
-  static abilityDuration = 4;
+  static abilityDuration = 6;
   static abilityCooldown = 50;
 
   constructor(player) {
@@ -25,9 +25,8 @@ module.exports = class Mage extends Evolution {
   }
 
   applyAbilityEffects() {
-    // Conjure ability - uses element ability and switches
+    // Conjure ability - enhances current element and then switches
     if (!this.abilityUsed) {
-      this.performElementAbility();
       // Switch to random different element
       const oldElement = this.currentElement;
       do {
@@ -36,47 +35,55 @@ module.exports = class Mage extends Evolution {
       this.abilityUsed = true;
     }
 
-    // Continue applying the element ability effect
-    switch (this.currentElement) {
-      case ELEMENTS.DARKNESS:
-        this.player.modifiers.invisible = true;
-        this.player.viewport.multiplier *= 0.3; // Loses vision
-        break;
-      case ELEMENTS.NATURE:
-        // Healing effect is handled in performElementAbility
-        break;
-    }
-  }
-
-  performElementAbility() {
+    // Massively enhanced effects during ability
     switch (this.currentElement) {
       case ELEMENTS.FIRE:
-        // Summons 16 fireballs (simplified - adds burning effect to nearby)
-        this.player.modifiers.fireballBurst = true;
+        if (this.player.sword && this.player.sword.damage) {
+          this.player.sword.damage.multiplier *= 1.8;
+        }
         break;
       case ELEMENTS.WATER:
-        // Slowing field
-        this.player.modifiers.slowField = true;
+        if (this.player.health && this.player.health.regeneration) {
+          this.player.health.regeneration.multiplier *= 4;
+        }
+        this.player.viewport.zoom.multiplier *= 1.5;
         break;
       case ELEMENTS.EARTH:
-        // Shockwave knockback
-        this.player.modifiers.shockwave = true;
+        this.player.shape.setScale(1.5);
+        if (this.player.sword && this.player.sword.knockback) {
+          this.player.sword.knockback.multiplier['element'] = 2;
+        }
+        this.player.knockbackResistance.multiplier *= 3;
         break;
       case ELEMENTS.AIR:
-        // Push away nearby players
-        this.player.modifiers.windGust = true;
+        if (this.player.speed) {
+          this.player.speed.multiplier *= 2;
+        }
+        if (this.player.sword && this.player.sword.knockback) {
+          this.player.sword.knockback.multiplier['throw'] = 3;
+        }
         break;
       case ELEMENTS.DARKNESS:
-        // Invisibility (handled in applyAbilityEffects)
+        this.player.modifiers.invisible = true;
+        if (this.player.sword && this.player.sword.damage) {
+          this.player.sword.damage.multiplier *= 1.5;
+        }
         break;
       case ELEMENTS.NATURE:
-        // Heal to full over duration
-        this.player.modifiers.rapidHeal = true;
+        if (this.player.health && this.player.health.regeneration) {
+          this.player.health.regeneration.multiplier *= 6;
+        }
+        if (this.player.health && this.player.health.max) {
+          this.player.health.max.multiplier *= 1.3;
+        }
         break;
       case ELEMENTS.LIGHTNING:
-        // Dash and stun
-        this.player.modifiers.lightningDash = true;
-        this.player.speed.multiplier *= 2.5;
+        if (this.player.speed) {
+          this.player.speed.multiplier *= 2.5;
+        }
+        if (this.player.sword && this.player.sword.damage) {
+          this.player.sword.damage.multiplier *= 1.4;
+        }
         break;
     }
   }
@@ -98,43 +105,52 @@ module.exports = class Mage extends Evolution {
     // Passive: Master of all elements - different abilities per element
     switch (this.currentElement) {
       case ELEMENTS.FIRE:
-        // Deals damage over time
-        this.player.modifiers.fireDamage = true;
+        // Higher damage
+        if (this.player.sword && this.player.sword.damage) {
+          this.player.sword.damage.multiplier *= 1.25;
+        }
         break;
       case ELEMENTS.WATER:
-        // Sees farther in river
-        if (this.player.biome === Types.Biome.River) {
-          this.player.viewport.multiplier *= 1.5;
+        // Better regen and vision
+        if (this.player.health && this.player.health.regeneration) {
+          this.player.health.regeneration.multiplier *= 1.4;
         }
+        this.player.viewport.zoom.multiplier *= 1.2;
         break;
       case ELEMENTS.EARTH:
         // Increased knockback & resistance
         if (this.player.sword && this.player.sword.knockback) {
           this.player.sword.knockback.multiplier['element'] = 1.3;
         }
-        this.player.modifiers.knockbackResistance = 0.7;
+        this.player.knockbackResistance.multiplier *= 1.4;
+        this.player.shape.setScale(1.15);
         break;
       case ELEMENTS.AIR:
-        // Swordthrows fling players away
+        // Speed and throw knockback
+        if (this.player.speed) {
+          this.player.speed.multiplier *= 1.25;
+        }
         if (this.player.sword && this.player.sword.knockback) {
-          this.player.sword.knockback.multiplier['throw'] = 2;
+          this.player.sword.knockback.multiplier['throw'] = 1.5;
         }
         break;
       case ELEMENTS.DARKNESS:
-        // Lifesteal
-        this.player.modifiers.leech = 0.25;
-        // Speed boost after getting attacked (handled in damage logic)
+        // Stealth and damage
+        this.player.modifiers.invisible = true;
+        if (this.player.sword && this.player.sword.damage) {
+          this.player.sword.damage.multiplier *= 1.15;
+        }
         break;
       case ELEMENTS.NATURE:
-        // Regens much faster
+        // Strong regen
         if (this.player.health && this.player.health.regeneration) {
-          this.player.health.regeneration.multiplier *= 1.8;
+          this.player.health.regeneration.multiplier *= 2;
         }
         break;
       case ELEMENTS.LIGHTNING:
-        // Increased speed
+        // High speed
         if (this.player.speed) {
-          this.player.speed.multiplier *= 1.25;
+          this.player.speed.multiplier *= 1.35;
         }
         break;
     }

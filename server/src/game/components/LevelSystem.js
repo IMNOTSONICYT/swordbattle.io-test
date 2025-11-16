@@ -90,7 +90,9 @@ class LevelSystem {
   }
 
   addCoins(coins) {
-    this.coins += coins;
+    // Apply candy multiplier if player has Candygrabber evolution
+    const multiplier = this.player.modifiers.candyMultiplier || 1;
+    this.coins += coins * multiplier;
     while (this.coins >= this.nextLevelCoins) {
       if (this.level === this.maxLevel) break;
 
