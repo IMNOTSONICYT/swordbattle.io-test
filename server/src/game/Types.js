@@ -73,6 +73,14 @@ module.exports = {
     Slasher: 18,
     Striker: 19,
     Plaguebearer: 20,
+    // Halloween Evolutions
+    Candygrabber: 21,
+    Spirit: 22,
+    Werewolf: 23,
+    Mage: 24,
+    Alchemist: 25,
+    Necromancer: 26,
+    Astral: 27,
   },
   Buff: {
     Speed: 1,
